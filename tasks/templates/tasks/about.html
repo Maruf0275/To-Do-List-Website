@@ -1,0 +1,109 @@
+{% extends 'base.html' %}
+
+{% block title %}About - TaskMaster{% endblock %}
+
+{% block content %}
+<div class="about-page">
+    <div class="container">
+        <div class="about-header">
+            <h1>About <span class="gradient-text">TaskMaster</span></h1>
+            <p class="subtitle">Your Ultimate Task Management Solution</p>
+        </div>
+        
+        <div class="about-content">
+            <div class="about-section">
+                <h2><i class="fas fa-bullseye"></i> Our Mission</h2>
+                <p>
+                    TaskMaster is designed to help individuals and teams stay organized, boost productivity, 
+                    and achieve their goals through efficient task management. We believe that everyone 
+                    deserves simple, powerful tools to manage their daily activities.
+                </p>
+            </div>
+            
+            <div class="about-section">
+                <h2><i class="fas fa-star"></i> Key Features</h2>
+                <div class="features-list">
+                    <div class="feature-item">
+                        <i class="fas fa-check-circle"></i>
+                        <div>
+                            <h4>Intuitive Task Management</h4>
+                            <p>Create, update, and organize your tasks with ease using our clean interface.</p>
+                        </div>
+                    </div>
+                    <div class="feature-item">
+                        <i class="fas fa-check-circle"></i>
+                        <div>
+                            <h4>Priority & Status Tracking</h4>
+                            <p>Set priorities and track status to focus on what matters most.</p>
+                        </div>
+                    </div>
+                    <div class="feature-item">
+                        <i class="fas fa-check-circle"></i>
+                        <div>
+                            <h4>Advanced Filtering</h4>
+                            <p>Filter tasks by status, priority, and due date for better organization.</p>
+                        </div>
+                    </div>
+                    <div class="feature-item">
+                        <i class="fas fa-check-circle"></i>
+                        <div>
+                            <h4>Responsive Design</h4>
+                            <p>Access your tasks on any device - desktop, tablet, or mobile.</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="about-section">
+                <h2><i class="fas fa-code"></i> Technology Stack</h2>
+                <div class="tech-stack">
+                    <div class="tech-item">
+                        <i class="fab fa-python"></i>
+                        <span>Python & Django</span>
+                    </div>
+                    <div class="tech-item">
+                        <i class="fab fa-html5"></i>
+                        <span>HTML5</span>
+                    </div>
+                    <div class="tech-item">
+                        <i class="fab fa-css3-alt"></i>
+                        <span>CSS3</span>
+                    </div>
+                    <div class="tech-item">
+                        <i class="fab fa-js"></i>
+                        <span>JavaScript</span>
+                    </div>
+                    <div class="tech-item">
+                        <i class="fas fa-database"></i>
+                        <span>SQLite</span>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="about-section">
+                <h2><i class="fas fa-graduation-cap"></i> Project Purpose</h2>
+                <p>
+                    This project was developed to demonstrate full-stack web development skills using Django framework. 
+                    It showcases implementation of CRUD operations, user authentication, responsive design, 
+                    and modern UI/UX principles. The application follows Django best practices and 
+                    implements industry-standard security measures.
+                </p>
+            </div>
+            
+            <div class="cta-box">
+                <h3>Ready to get started?</h3>
+                <p>Join us today and start managing your tasks efficiently!</p>
+                {% if not user.is_authenticated %}
+                    <a href="{% url 'register' %}" class="btn btn-primary btn-lg">
+                        <i class="fas fa-user-plus"></i> Create Free Account
+                    </a>
+                {% else %}
+                    <a href="{% url 'task-list' %}" class="btn btn-primary btn-lg">
+                        <i class="fas fa-tasks"></i> Go to My Tasks
+                    </a>
+                {% endif %}
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

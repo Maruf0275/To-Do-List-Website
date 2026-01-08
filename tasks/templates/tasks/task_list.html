@@ -1,0 +1,176 @@
+{% extends 'base.html' %}
+
+{% block title %}My Tasks - TaskMaster{% endblock %}
+
+{% block content %}
+<div class="tasks-page">
+    <div class="container">
+        <div class="page-header">
+            <h1><i class="fas fa-list-check"></i> My Tasks</h1>
+            <a href="{% url 'task-create' %}" class="btn btn-primary">
+                <i class="fas fa-plus"></i> New Task
+            </a>
+        </div>
+
+        <!-- Statistics Cards -->
+        <div class="stats-cards">
+            <div class="stat-card {% if status_filter == 'all' %}active{% endif %}">
+                <a href="?status=all&priority={{ priority_filter }}&search={{ search_query }}&sort={{ sort_by }}">
+                    <div class="stat-icon"><i class="fas fa-tasks"></i></div>
+                    <div class="stat-info">
+                        <span class="stat-number">{{ total_count }}</span>
+                        <span class="stat-label">All Tasks</span>
+                    </div>
+                </a>
+            </div>
+            <div class="stat-card {% if status_filter == 'active' %}active{% endif %}">
+                <a href="?status=active&priority={{ priority_filter }}&search={{ search_query }}&sort={{ sort_by }}">
+                    <div class="stat-icon"><i class="fas fa-hourglass-half"></i></div>
+                    <div class="stat-info">
+                        <span class="stat-number">{{ active_count }}</span>
+                        <span class="stat-label">Active</span>
+                    </div>
+                </a>
+            </div>
+            <div class="stat-card {% if status_filter == 'completed' %}active{% endif %}">
+                <a href="?status=completed&priority={{ priority_filter }}&search={{ search_query }}&sort={{ sort_by }}">
+                    <div class="stat-icon"><i class="fas fa-check-circle"></i></div>
+                    <div class="stat-info">
+                        <span class="stat-number">{{ completed_count }}</span>
+                        <span class="stat-label">Completed</span>
+                    </div>
+                </a>
+            </div>
+            <div class="stat-card {% if overdue_count > 0 %}warning{% endif %}">
+                <div class="stat-icon"><i class="fas fa-exclamation-triangle"></i></div>
+                <div class="stat-info">
+                    <span class="stat-number">{{ overdue_count }}</span>
+                    <span class="stat-label">Overdue</span>
+                </div>
+            </div>
+        </div>
+
+        <!-- Filters and Search -->
+        <div class="task-controls">
+            <form method="get" class="filters-form">
+                <div class="search-box">
+                    <i class="fas fa-search"></i>
+                    <input type="text" name="search" placeholder="Search tasks..." value="{{ search_query }}">
+                </div>
+                
+                <select name="priority" class="filter-select" onchange="this.form.submit()">
+                    <option value="">All Priorities</option>
+                    <option value="low" {% if priority_filter == 'low' %}selected{% endif %}>Low</option>
+                    <option value="medium" {% if priority_filter == 'medium' %}selected{% endif %}>Medium</option>
+                    <option value="high" {% if priority_filter == 'high' %}selected{% endif %}>High</option>
+                </select>
+                
+                <select name="sort" class="filter-select" onchange="this.form.submit()">
+                    <option value="-created_at" {% if sort_by == '-created_at' %}selected{% endif %}>Newest First</option>
+                    <option value="created_at" {% if sort_by == 'created_at' %}selected{% endif %}>Oldest First</option>
+                    <option value="due_date" {% if sort_by == 'due_date' %}selected{% endif %}>Due Date</option>
+                    <option value="-priority" {% if sort_by == '-priority' %}selected{% endif %}>Priority</option>
+                    <option value="title" {% if sort_by == 'title' %}selected{% endif %}>Title A-Z</option>
+                </select>
+                
+                <input type="hidden" name="status" value="{{ status_filter }}">
+                <button type="submit" class="btn btn-secondary">Apply</button>
+            </form>
+        </div>
+
+        <!-- Tasks List -->
+        {% if tasks %}
+            <div class="tasks-grid">
+                {% for task in tasks %}
+                    <div class="task-card {% if task.is_completed %}completed{% endif %} {% if task.is_overdue %}overdue{% endif %}">
+                        <div class="task-header">
+                            <div class="task-priority priority-{{ task.priority }}">
+                                <i class="fas fa-flag"></i>
+                                {{ task.get_priority_display }}
+                            </div>
+                            <div class="task-actions">
+                                <a href="{% url 'task-detail' task.pk %}" class="action-btn" title="View">
+                                    <i class="fas fa-eye"></i>
+                                </a>
+                                <a href="{% url 'task-update' task.pk %}" class="action-btn" title="Edit">
+                                    <i class="fas fa-edit"></i>
+                                </a>
+                                <a href="{% url 'task-delete' task.pk %}" class="action-btn delete" title="Delete">
+                                    <i class="fas fa-trash"></i>
+                                </a>
+                            </div>
+                        </div>
+                        
+                        <div class="task-body">
+                            <h3 class="task-title">{{ task.title }}</h3>
+                            {% if task.description %}
+                                <p class="task-description">{{ task.description|truncatewords:20 }}</p>
+                            {% endif %}
+                            
+                            <div class="task-meta">
+                                {% if task.due_date %}
+                                    <span class="meta-item {% if task.is_overdue %}overdue-text{% endif %}">
+                                        <i class="fas fa-calendar"></i>
+                                        {{ task.due_date|date:"M d, Y" }}
+                                    </span>
+                                {% endif %}
+                                <span class="meta-item">
+                                    <i class="fas fa-info-circle"></i>
+                                    {{ task.get_status_display }}
+                                </span>
+                            </div>
+                        </div>
+                        
+                        <div class="task-footer">
+                            <form method="post" action="{% url 'task-toggle' task.pk %}" class="toggle-form">
+                                {% csrf_token %}
+                                <button type="submit" class="btn-toggle {% if task.is_completed %}completed{% endif %}">
+                                    <i class="fas {% if task.is_completed %}fa-rotate-left{% else %}fa-check{% endif %}"></i>
+                                    {% if task.is_completed %}Mark Pending{% else %}Mark Complete{% endif %}
+                                </button>
+                            </form>
+                            <span class="task-date">{{ task.created_at|timesince }} ago</span>
+                        </div>
+                    </div>
+                {% endfor %}
+            </div>
+
+            <!-- Pagination -->
+            {% if is_paginated %}
+                <div class="pagination">
+                    {% if page_obj.has_previous %}
+                        <a href="?page=1&status={{ status_filter }}&priority={{ priority_filter }}&search={{ search_query }}&sort={{ sort_by }}" class="page-link">
+                            <i class="fas fa-angles-left"></i>
+                        </a>
+                        <a href="?page={{ page_obj.previous_page_number }}&status={{ status_filter }}&priority={{ priority_filter }}&search={{ search_query }}&sort={{ sort_by }}" class="page-link">
+                            <i class="fas fa-angle-left"></i>
+                        </a>
+                    {% endif %}
+                    
+                    <span class="page-current">
+                        Page {{ page_obj.number }} of {{ page_obj.paginator.num_pages }}
+                    </span>
+                    
+                    {% if page_obj.has_next %}
+                        <a href="?page={{ page_obj.next_page_number }}&status={{ status_filter }}&priority={{ priority_filter }}&search={{ search_query }}&sort={{ sort_by }}" class="page-link">
+                            <i class="fas fa-angle-right"></i>
+                        </a>
+                        <a href="?page={{ page_obj.paginator.num_pages }}&status={{ status_filter }}&priority={{ priority_filter }}&search={{ search_query }}&sort={{ sort_by }}" class="page-link">
+                            <i class="fas fa-angles-right"></i>
+                        </a>
+                    {% endif %}
+                </div>
+            {% endif %}
+        {% else %}
+            <div class="empty-state">
+                <i class="fas fa-clipboard-list"></i>
+                <h3>No tasks found</h3>
+                <p>{% if search_query %}No tasks match your search criteria.{% else %}Start by creating your first task!{% endif %}</p>
+                <a href="{% url 'task-create' %}" class="btn btn-primary">
+                    <i class="fas fa-plus"></i> Create Task
+                </a>
+            </div>
+        {% endif %}
+    </div>
+</div>
+{% endblock %}

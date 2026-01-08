@@ -1,0 +1,103 @@
+{% extends 'base.html' %}
+
+{% block title %}{{ task.title }} - TaskMaster{% endblock %}
+
+{% block content %}
+<div class="detail-page">
+    <div class="container">
+        <div class="detail-container">
+            <div class="detail-header">
+                <h1><i class="fas fa-tasks"></i> Task Details</h1>
+                <a href="{% url 'task-list' %}" class="btn btn-outline">
+                    <i class="fas fa-arrow-left"></i> Back to List
+                </a>
+            </div>
+            
+            <div class="detail-card">
+                <div class="detail-card-header">
+                    <div class="title-section">
+                        <h2>{{ task.title }}</h2>
+                        <div class="badges">
+                            <span class="badge badge-{{ task.priority }}">
+                                <i class="fas fa-flag"></i> {{ task.get_priority_display }} Priority
+                            </span>
+                            <span class="badge badge-status-{{ task.status }}">
+                                <i class="fas fa-info-circle"></i> {{ task.get_status_display }}
+                            </span>
+                            {% if task.is_overdue %}
+                                <span class="badge badge-danger">
+                                    <i class="fas fa-exclamation-triangle"></i> Overdue
+                                </span>
+                            {% endif %}
+                        </div>
+                    </div>
+                    
+                    <div class="action-buttons">
+                        <a href="{% url 'task-update' task.pk %}" class="btn btn-primary">
+                            <i class="fas fa-edit"></i> Edit
+                        </a>
+                        <a href="{% url 'task-delete' task.pk %}" class="btn btn-danger">
+                            <i class="fas fa-trash"></i> Delete
+                        </a>
+                    </div>
+                </div>
+                
+                <div class="detail-card-body">
+                    <div class="detail-section">
+                        <h3><i class="fas fa-align-left"></i> Description</h3>
+                        <p>{{ task.description|default:"No description provided." }}</p>
+                    </div>
+                    
+                    <div class="detail-grid">
+                        <div class="detail-item">
+                            <span class="label">
+                                <i class="fas fa-calendar-plus"></i> Created
+                            </span>
+                            <span class="value">{{ task.created_at|date:"F d, Y, g:i A" }}</span>
+                        </div>
+                        
+                        <div class="detail-item">
+                            <span class="label">
+                                <i class="fas fa-calendar-check"></i> Last Updated
+                            </span>
+                            <span class="value">{{ task.updated_at|date:"F d, Y, g:i A" }}</span>
+                        </div>
+                        
+                        {% if task.due_date %}
+                            <div class="detail-item">
+                                <span class="label">
+                                    <i class="fas fa-calendar-alt"></i> Due Date
+                                </span>
+                                <span class="value {% if task.is_overdue %}text-danger{% endif %}">
+                                    {{ task.due_date|date:"F d, Y" }}
+                                </span>
+                            </div>
+                        {% endif %}
+                        
+                        {% if task.completed_at %}
+                            <div class="detail-item">
+                                <span class="label">
+                                    <i class="fas fa-check-circle"></i> Completed
+                                </span>
+                                <span class="value">{{ task.completed_at|date:"F d, Y, g:i A" }}</span>
+                            </div>
+                        {% endif %}
+                    </div>
+                    
+                    <form method="post" action="{% url 'task-toggle' task.pk %}" class="toggle-status-form">
+                        {% csrf_token %}
+                        <button type="submit" class="btn {% if task.is_completed %}btn-warning{% else %}btn-success{% endif %} btn-lg btn-block">
+                            <i class="fas {% if task.is_completed %}fa-rotate-left{% else %}fa-check{% endif %}"></i>
+                            {% if task.is_completed %}
+                                Mark as Pending
+                            {% else %}
+                                Mark as Completed
+                            {% endif %}
+                        </button>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

@@ -1,0 +1,147 @@
+{% extends 'base.html' %}
+
+{% block title %}Profile - TaskMaster{% endblock %}
+
+{% block content %}
+<div class="profile-page">
+    <div class="container">
+        <div class="profile-header">
+            <h1><i class="fas fa-user-circle"></i> My Profile</h1>
+        </div>
+        
+        <div class="profile-grid">
+            <div class="profile-sidebar">
+                <div class="profile-card">
+                    <div class="profile-avatar">
+                        {% if user.profile.avatar %}
+                            <img src="{{ user.profile.avatar.url }}" alt="{{ user.username }}">
+                        {% else %}
+                            <i class="fas fa-user-circle"></i>
+                        {% endif %}
+                    </div>
+                    <h3>{{ user.profile.full_name }}</h3>
+                    <p class="username">@{{ user.username }}</p>
+                    <p class="email"><i class="fas fa-envelope"></i> {{ user.email }}</p>
+                    <p class="joined"><i class="fas fa-calendar-alt"></i> Joined {{ user.date_joined|date:"F Y" }}</p>
+                </div>
+                
+                <div class="stats-card">
+                    <h4>Task Statistics</h4>
+                    <div class="stat-row">
+                        <span class="stat-label"><i class="fas fa-tasks"></i> Total Tasks</span>
+                        <span class="stat-value">{{ total_tasks }}</span>
+                    </div>
+                    <div class="stat-row">
+                        <span class="stat-label"><i class="fas fa-check-circle"></i> Completed</span>
+                        <span class="stat-value">{{ completed_tasks }}</span>
+                    </div>
+                    <div class="stat-row">
+                        <span class="stat-label"><i class="fas fa-clock"></i> Pending</span>
+                        <span class="stat-value">{{ pending_tasks }}</span>
+                    </div>
+                    <div class="stat-row">
+                        <span class="stat-label"><i class="fas fa-flag"></i> High Priority</span>
+                        <span class="stat-value">{{ high_priority }}</span>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="profile-content">
+                <div class="profile-section">
+                    <h2><i class="fas fa-user-edit"></i> Update Profile</h2>
+                    
+                    <form method="post" enctype="multipart/form-data" class="profile-form">
+                        {% csrf_token %}
+                        
+                        <div class="form-section">
+                            <h3>Account Information</h3>
+                            
+                            <div class="form-row">
+                                <div class="form-group">
+                                    <label for="{{ user_form.first_name.id_for_label }}">First Name</label>
+                                    {{ user_form.first_name }}
+                                    {% if user_form.first_name.errors %}
+                                        <div class="error-message">{{ user_form.first_name.errors }}</div>
+                                    {% endif %}
+                                </div>
+                                
+                                <div class="form-group">
+                                    <label for="{{ user_form.last_name.id_for_label }}">Last Name</label>
+                                    {{ user_form.last_name }}
+                                    {% if user_form.last_name.errors %}
+                                        <div class="error-message">{{ user_form.last_name.errors }}</div>
+                                    {% endif %}
+                                </div>
+                            </div>
+                            
+                            <div class="form-group">
+                                <label for="{{ user_form.username.id_for_label }}">Username</label>
+                                {{ user_form.username }}
+                                {% if user_form.username.errors %}
+                                    <div class="error-message">{{ user_form.username.errors }}</div>
+                                {% endif %}
+                            </div>
+                            
+                            <div class="form-group">
+                                <label for="{{ user_form.email.id_for_label }}">Email</label>
+                                {{ user_form.email }}
+                                {% if user_form.email.errors %}
+                                    <div class="error-message">{{ user_form.email.errors }}</div>
+                                {% endif %}
+                            </div>
+                        </div>
+                        
+                        <div class="form-section">
+                            <h3>Profile Details</h3>
+                            
+                            <div class="form-group">
+                                <label for="{{ profile_form.bio.id_for_label }}">Bio</label>
+                                {{ profile_form.bio }}
+                                {% if profile_form.bio.errors %}
+                                    <div class="error-message">{{ profile_form.bio.errors }}</div>
+                                {% endif %}
+                            </div>
+                            
+                            <div class="form-row">
+                                <div class="form-group">
+                                    <label for="{{ profile_form.phone_number.id_for_label }}">Phone Number</label>
+                                    {{ profile_form.phone_number }}
+                                    {% if profile_form.phone_number.errors %}
+                                        <div class="error-message">{{ profile_form.phone_number.errors }}</div>
+                                    {% endif %}
+                                </div>
+                                
+                                <div class="form-group">
+                                    <label for="{{ profile_form.birth_date.id_for_label }}">Birth Date</label>
+                                    {{ profile_form.birth_date }}
+                                    {% if profile_form.birth_date.errors %}
+                                        <div class="error-message">{{ profile_form.birth_date.errors }}</div>
+                                    {% endif %}
+                                </div>
+                            </div>
+                            
+                            <div class="form-group">
+                                <label for="{{ profile_form.avatar.id_for_label }}">Profile Picture</label>
+                                {{ profile_form.avatar }}
+                                {% if profile_form.avatar.errors %}
+                                    <div class="error-message">{{ profile_form.avatar.errors }}</div>
+                                {% endif %}
+                                <small class="form-text">Upload a profile picture (JPG, PNG, max 2MB)</small>
+                            </div>
+                        </div>
+                        
+                        <div class="form-actions">
+                            <button type="submit" class="btn btn-primary btn-lg">
+                                <i class="fas fa-save"></i> Update Profile
+                            </button>
+                            <a href="{% url 'home' %}" class="btn btn-outline btn-lg">
+                                <i class="fas fa-times"></i> Cancel
+                            </a>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
